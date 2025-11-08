@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Registration System</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background: #0077cc;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    h2 {
+      color: #0077cc;
+      border-bottom: 2px solid #0077cc;
+      padding-bottom: 5px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #0077cc;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #0077cc;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .delete-btn {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: darkred;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 15px;
+      background-color: #0077cc;
+      color: white;
+      border-radius: 0 0 8px 8px;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        margin: 10px;
+        padding: 15px;
+      }
+
+      table, th, td {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🎓 Web-Based Course Registration</h1>
+  </header>
+
+  <main>
+    <section id="registration-section">
+      <h2>Register for a Course</h2>
+      <form id="registration-form">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" required placeholder="Enter your full name">
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required placeholder="Enter your email">
+
+        <label for="course">Select Course:</label>
+        <select id="course" required>
+          <option value="">-- Choose a Course --</option>
+          <option value="HTML & CSS Fundamentals">HTML & CSS Fundamentals</option>
+          <option value="JavaScript for Beginners">JavaScript for Beginners</option>
+          <option value="Front-End Web Development">Front-End Web Development</option>
+          <option value="React Essentials">React Essentials</option>
+        </select>
+
+        <button type="submit">Register</button>
+      </form>
+    </section>
+
+    <section id="registered-section">
+      <h2>Registered Students</h2>
+      <table id="student-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS will populate here -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Course Registration System | Powered by 🔨🤖🔧</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('registration-form');
+      const tableBody = document.querySelector('#student-table tbody');
+
+      // Load from localStorage
+      let students = JSON.parse(localStorage.getItem('students')) || [];
+
+      function renderTable() {
+        tableBody.innerHTML = '';
+        students.forEach((student, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${student.name}</td>
+            <td>${student.email}</td>
+            <td>${student.course}</td>
+            <td><button class="delete-btn" data-index="${index}">Delete</button></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const course = document.getElementById('course').value;
+
+        if (!name || !email || !course) {
+          alert('⚠️ Please fill all fields!');
+          return;
+        }
+
+        const newStudent = { name, email, course };
+        students.push(newStudent);
+        localStorage.setItem('students', JSON.stringify(students));
+
+        renderTable();
+        form.reset();
+      });
+
+      tableBody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+          const index = e.target.dataset.index;
+          students.splice(index, 1);
+          localStorage.setItem('students', JSON.stringify(students));
+          renderTable();
+        }
+      });
+
+      renderTable();
+    });
+  </script>
+</body>
+</html>
